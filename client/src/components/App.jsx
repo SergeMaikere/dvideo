@@ -2,21 +2,22 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import DVideo from '../contracts/DVideo.json';
+import Container from '@mui/material/Container';
+import Grid2 from '@mui/material/Unstable_Grid2';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Typography from '@mui/material/Typography';
+import Upload from './Upload';
+import { pipe, pipeWith, andThen } from 'ramda';
+import IpfsClient from 'ipfs-http-client';
+
+const ipfs = IpfsClient( {host: 'ipfs.infura.io', port: 5001, protocol: 'https'} );
 
 const ERROR_ETHEREUM_BROWSER = 'Non-ethereum browser detected. You should consider using Metamask';
 
 const App = () => {
 
-    useEffect(
-        () => {
-            const init = async () => {
-                const web3 = await loadWeb3();
-                await getBlockChainData(web3);
-            }
-            init();
-        }, []
-    )
-
+    const [ loader, setLoader ] = useState( true );
     const [ account, setAccount ] = useState( '0x0' );
     const [ contract, setContract ] = useState( {} );
     const [ videoCount, setVideoCount ] = useState( 0 );
@@ -34,22 +35,22 @@ const App = () => {
         //Get Account adress from metamask
         const [ accounts, error ] = await web3.eth.getAccounts();
         if ( error ) alert('No account detected');
-        console.log('Accounts', accounts)
+        //console.log('Accounts', accounts)
         setAccount(accounts);
 
         //Get contract
         const contract = await getContract(web3);
-        console.log('Contract', contract);
+        //console.log('Contract', contract);
         setContract(contract);
 
         //Get video count from contract
         const videoCount = await contract.methods.videoCount().call();
-        console.log('videCount', videoCount);
+        //console.log('videCount', videoCount);
         setVideoCount(videoCount);
         
         //Get all the videos data
         const videos = await getAllVideos( videoCount, contract );
-        console.log('videos', videos);
+        //console.log('videos', videos);
         setVideos( [...videos] );
 
         //Get all the user's videos data
@@ -62,9 +63,73 @@ const App = () => {
     }
 
     const getAllVideos = async (videoCount, contract) => Promise.all( [...Array(videoCount)].map(async (count) => await contract.methods.videos(count).call()) );
+    
+    const setFileToBuffer = async formData => {
+        console.log('setFileToBuffer', formData);
+
+        const reader = new FileReader();
+        await reader.readAsArrayBuffer( formData.file );
+        if (reader.error) alert('File corrupted')
+        return {...formData, buffer: Buffer(reader.result)};
+    }
+
+    const sendFileToIpfs = async formData => {
+        console.log('sendFileToIpfs', formData)
+        const [ result, error ] = await ipfs.add(formData.buffer);
+        if (error) alert('Upload to the cloud failed');
+        return {...formData, ipfsData: result};
+    }
+
+    const saveFileToContract = async formData => {
+        await contract.methods
+        .uploadVideo( formData.ipfsData.hash, formData.title, formData.description )
+        .send( {from: account} );
+        return formData;
+    }
+
+    const addVideo = async formData => {
+        setVideoCount( videoCount++ );
+        const video = await contract.methods.videos(videoCount);
+        setVideos( [...videos, video] );
+        return `video : ${formData.file.name} succesfuly uploaded`;
+    }
+
+    const notifyUser = msg => alert(msg);
+
+    const pipeAsyncFunctions = (...fns) => arg => fns.reduce((p, f) => p.then(f), Promise.resolve(arg));
+
+    const uploadVideo = pipeAsyncFunctions(
+        setFileToBuffer,
+        sendFileToIpfs,
+        saveFileToContract,
+        addVideo,
+        notifyUser
+    )
+    
+
+    useEffect(
+        () => {
+            const init = async () => {
+                const web3 = await loadWeb3();
+                await getBlockChainData(web3);
+                setLoader(false);
+            }
+            init();
+        }, []
+    )
  
     return (
-        <div>APP COMPONENT</div>
+        <Container maxWidth="lg">
+
+            <Grid2 container spacing={2}>
+                <Grid2 sm={3}></Grid2>
+                <Grid2 sm={9}><Upload uploadVideo={uploadVideo} /></Grid2>
+            </Grid2>
+            <Alert severity="success" onClose={ () => {} }>
+                <AlertTitle>Success !</AlertTitle>
+                <Typography variant="body1">Upload was a success</Typography> 
+            </Alert>
+        </Container>
     );
 }
 
