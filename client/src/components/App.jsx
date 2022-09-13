@@ -9,9 +9,9 @@ import AlertTitle from '@mui/material/AlertTitle';
 import Typography from '@mui/material/Typography';
 import Upload from './Upload';
 import { pipe, pipeWith, andThen } from 'ramda';
-import IpfsClient from 'ipfs-http-client';
+import { create } from 'ipfs-http-client';
 
-const ipfs = IpfsClient( {host: 'ipfs.infura.io', port: 5001, protocol: 'https'} );
+const ipfs = create({ url: "https://ipfs.infura.io/5001" });
 
 const ERROR_ETHEREUM_BROWSER = 'Non-ethereum browser detected. You should consider using Metamask';
 
@@ -22,6 +22,7 @@ const App = () => {
     const [ contract, setContract ] = useState( {} );
     const [ videoCount, setVideoCount ] = useState( 0 );
     const [ videos, setVideos ] = useState( [] );
+    const [ newVideo, setNewVideo ] = useState( {} );
     
     const loadWeb3 = async () => window.ethereum ? enableMetamask() : ( window.web3 ? new Web3(Web3.currentProvider) : alert(ERROR_ETHEREUM_BROWSER) );
 
@@ -62,49 +63,44 @@ const App = () => {
         return new web3.eth.Contract( DVideo.abi, address );
     }
 
-    const getAllVideos = async (videoCount, contract) => Promise.all( [...Array(videoCount)].map(async (count) => await contract.methods.videos(count).call()) );
-    
-    const setFileToBuffer = async formData => {
-        console.log('setFileToBuffer', formData);
+    const getAllVideos = async (videoCount, contract) => Promise.all( 
+        [...Array(videoCount)].map(async (count) => await contract.methods.videos(count).call()) 
+    );
 
-        const reader = new FileReader();
-        await reader.readAsArrayBuffer( formData.file );
-        if (reader.error) alert('File corrupted')
-        return {...formData, buffer: Buffer(reader.result)};
-    }
+    // const convertToBuffer = formData => {
+    //     const reader = new FileReader();
+    //     reader.onloadend = () => setNewVideo( {...formData, buffer: Buffer(formData.file)} );
+    //     reader.readAsArrayBuffer(formData.file);
+    // }
 
     const sendFileToIpfs = async formData => {
-        console.log('sendFileToIpfs', formData)
-        const [ result, error ] = await ipfs.add(formData.buffer);
+        const result = await ipfs.add(formData.buffer);
         if (error) alert('Upload to the cloud failed');
-        return {...formData, ipfsData: result};
+        return ({...formData, ipfsData: result});
     }
 
-    const saveFileToContract = async formData => {
+    const saveFileToContract = async ipfsData => {
         await contract.methods
-        .uploadVideo( formData.ipfsData.hash, formData.title, formData.description )
+        .uploadVideo( ipfsData.ipfsData.hash, ipfsData.title, ipfsData.description )
         .send( {from: account} );
-        return formData;
+        return ipfsData;
     }
 
-    const addVideo = async formData => {
+    const addVideo = async videoData => {
         setVideoCount( videoCount++ );
         const video = await contract.methods.videos(videoCount);
         setVideos( [...videos, video] );
-        return `video : ${formData.file.name} succesfuly uploaded`;
+        notifyUser(`video : ${videoData.title} succesfuly uploaded`);
     }
 
     const notifyUser = msg => alert(msg);
 
-    const pipeAsyncFunctions = (...fns) => arg => fns.reduce((p, f) => p.then(f), Promise.resolve(arg));
-
-    const uploadVideo = pipeAsyncFunctions(
-        setFileToBuffer,
-        sendFileToIpfs,
-        saveFileToContract,
-        addVideo,
-        notifyUser
-    )
+    const uploadVideo = async formData => {
+        //setNewVideo(formData)
+        const ipfsData = await sendFileToIpfs(formData);
+        const videoData = await saveFileToContract(ipfsData);
+        await addVideo(videoData);
+    }
     
 
     useEffect(

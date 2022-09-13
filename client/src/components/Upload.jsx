@@ -16,15 +16,21 @@ const Upload = ( props ) => {
         setFormData( {...newFormData} );
     }
 
-    const handleFileChosen = e => {
-        let newFormData = { ...formData };
-        newFormData.file = e.target.files[0];
-        setFormData( newFormData );
+    const handleFileChosen = async e => {
+        console.log(e.target.files[0]);
+        await convertToBuffer(e.target.files[0]);
+        setFormData( {...formData, file: e.target.files[0]} );
     } 
 
+    const convertToBuffer = async file => {
+        const reader = new FileReader();
+        reader.onloadend = () => setFormData( {...formData , buffer: Buffer(reader.result)} );
+        await reader.readAsArrayBuffer(file);
+    }
+
     const handleSubmit = e => {
+        console.log(formData)
         e.preventDefault();
-        console.log('submitData', formData);
         props.uploadVideo(formData);
     } 
 
