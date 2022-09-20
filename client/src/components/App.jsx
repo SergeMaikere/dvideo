@@ -8,10 +8,10 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Typography from '@mui/material/Typography';
 import Upload from './Upload';
-import { pipe, pipeWith, andThen } from 'ramda';
 import { create } from 'ipfs-http-client';
 
-const ipfs = create({ url: "https://ipfs.infura.io/5001" });
+//const auth = `Basic ${Buffer(`${process.env.REACT_APP_INFURA_API_KEY}:${process.env.REACT_APP_INFURA_SECRET}`).toString('base64')}`
+const ipfs = create('/ip4/127.0.0.1/tcp/5001')
 
 const ERROR_ETHEREUM_BROWSER = 'Non-ethereum browser detected. You should consider using Metamask';
 
@@ -22,7 +22,6 @@ const App = () => {
     const [ contract, setContract ] = useState( {} );
     const [ videoCount, setVideoCount ] = useState( 0 );
     const [ videos, setVideos ] = useState( [] );
-    const [ newVideo, setNewVideo ] = useState( {} );
     
     const loadWeb3 = async () => window.ethereum ? enableMetamask() : ( window.web3 ? new Web3(Web3.currentProvider) : alert(ERROR_ETHEREUM_BROWSER) );
 
@@ -67,16 +66,11 @@ const App = () => {
         [...Array(videoCount)].map(async (count) => await contract.methods.videos(count).call()) 
     );
 
-    // const convertToBuffer = formData => {
-    //     const reader = new FileReader();
-    //     reader.onloadend = () => setNewVideo( {...formData, buffer: Buffer(formData.file)} );
-    //     reader.readAsArrayBuffer(formData.file);
-    // }
-
-    const sendFileToIpfs = async formData => {
-        const result = await ipfs.add(formData.buffer);
-        if (error) alert('Upload to the cloud failed');
-        return ({...formData, ipfsData: result});
+    const sendFileToIpfs = async buffer => {
+        const { cid } = await ipfs.add(buffer);
+        console.log('resut', cid)
+        if (cid.error) alert('Upload to the cloud failed');
+        return cid;
     }
 
     const saveFileToContract = async ipfsData => {
@@ -90,19 +84,14 @@ const App = () => {
         setVideoCount( videoCount++ );
         const video = await contract.methods.videos(videoCount);
         setVideos( [...videos, video] );
-        notifyUser(`video : ${videoData.title} succesfuly uploaded`);
     }
 
-    const notifyUser = msg => alert(msg);
-
-    const uploadVideo = async formData => {
-        //setNewVideo(formData)
-        const ipfsData = await sendFileToIpfs(formData);
-        const videoData = await saveFileToContract(ipfsData);
-        await addVideo(videoData);
+    const uploadVideo = async buffer => {
+        const ipfsData = await sendFileToIpfs(buffer);
+        //const videoData = await saveFileToContract(ipfsData);
+        //await addVideo(videoData);
     }
     
-
     useEffect(
         () => {
             const init = async () => {
@@ -121,10 +110,13 @@ const App = () => {
                 <Grid2 sm={3}></Grid2>
                 <Grid2 sm={9}><Upload uploadVideo={uploadVideo} /></Grid2>
             </Grid2>
-            <Alert severity="success" onClose={ () => {} }>
-                <AlertTitle>Success !</AlertTitle>
-                <Typography variant="body1">Upload was a success</Typography> 
-            </Alert>
+            {
+                !loader && 
+                <Alert severity="success" onClose={ () => {} }>
+                    <AlertTitle>Success !</AlertTitle>
+                    <Typography variant="body1">Upload was a success</Typography> 
+                </Alert>
+            }
         </Container>
     );
 }
