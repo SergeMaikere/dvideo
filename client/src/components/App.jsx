@@ -79,8 +79,8 @@ const App = () => {
         .on('transactionHash', hash => console.log('File saved') );;
     }
 
-    const addVideo = async videoData => {
-        setVideoCount( videoCount++ );
+    const addNewVideo = async () => {
+        setVideoCount( videoCount + 1 );
         const video = await contract.methods.videos(videoCount);
         setVideos( [...videos, video] );
     }
@@ -88,7 +88,8 @@ const App = () => {
     const uploadVideo = async fileData => {
         const ipfsData = await sendFileToIpfs(fileData.file);
         await saveFileToContract(ipfsData.path, fileData.title, fileData.description);
-        //await addVideo(result);
+        await addNewVideo();
+        console.log('videos', videos)
     }
     
     useEffect(
