@@ -67,17 +67,16 @@ const App = () => {
     );
 
     const sendFileToIpfs = async buffer => {
-        const { cid } = await ipfs.add(buffer);
-        console.log('resut', cid)
-        if (cid.error) alert('Upload to the cloud failed');
-        return cid;
+        const result = await ipfs.add(buffer);
+        if (result.error) alert('Upload to the cloud failed');
+        return result;
     }
 
-    const saveFileToContract = async ipfsData => {
+    const saveFileToContract = async (path, title, description) => {
         await contract.methods
-        .uploadVideo( ipfsData.ipfsData.hash, ipfsData.title, ipfsData.description )
-        .send( {from: account} );
-        return ipfsData;
+        .uploadVideo( path, title, description )
+        .send( {from: account} )
+        .on('transactionHash', hash => console.log('File saved') );;
     }
 
     const addVideo = async videoData => {
@@ -86,10 +85,10 @@ const App = () => {
         setVideos( [...videos, video] );
     }
 
-    const uploadVideo = async buffer => {
-        const ipfsData = await sendFileToIpfs(buffer);
-        //const videoData = await saveFileToContract(ipfsData);
-        //await addVideo(videoData);
+    const uploadVideo = async fileData => {
+        const ipfsData = await sendFileToIpfs(fileData.file);
+        await saveFileToContract(ipfsData.path, fileData.title, fileData.description);
+        //await addVideo(result);
     }
     
     useEffect(

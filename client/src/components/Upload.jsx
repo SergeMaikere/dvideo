@@ -11,7 +11,7 @@ const Upload = ( props ) => {
     const [ title, setTitle ] = useState('');
     const [ description, setDescription ] = useState('');
     const [ fileName, setFileName ] = useState('');
-    const [ buffer, setBuffer ] = useState({});
+    const [ file, setFile] = useState({});
 
     const handleTextChange = e => {
         if (e.target.id === 'title') setTitle( e.target.value );
@@ -19,20 +19,13 @@ const Upload = ( props ) => {
     }
 
     const handleFileChosen = async e => {
-        console.log(e.target.files[0]);
         setFileName( e.target.files[0].name );
-        await convertToBuffer(e.target.files[0]);
+        setFile(e.target.files[0]);
     } 
-
-    const convertToBuffer = async file => {
-        const reader = new FileReader();
-        reader.onloadend = () => setBuffer( Buffer(reader.result) );
-        await reader.readAsArrayBuffer(file);
-    }
 
     const handleSubmit = e => {
         e.preventDefault();
-        props.uploadVideo(buffer);
+        props.uploadVideo( {title: title, description: description, file: file} );
     } 
 
     return(
