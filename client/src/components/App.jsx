@@ -10,7 +10,6 @@ import Typography from '@mui/material/Typography';
 import Upload from './Upload';
 import { create } from 'ipfs-http-client';
 
-//const auth = `Basic ${Buffer(`${process.env.REACT_APP_INFURA_API_KEY}:${process.env.REACT_APP_INFURA_SECRET}`).toString('base64')}`
 const ipfs = create('/ip4/127.0.0.1/tcp/5001')
 
 const ERROR_ETHEREUM_BROWSER = 'Non-ethereum browser detected. You should consider using Metamask';
@@ -45,12 +44,10 @@ const App = () => {
 
         //Get video count from contract
         const videoCount = await contract.methods.videoCount().call();
-        //console.log('videCount', videoCount);
-        setVideoCount(videoCount);
+        setVideoCount(Number(videoCount));
         
         //Get all the videos data
         const videos = await getAllVideos( videoCount, contract );
-        //console.log('videos', videos);
         setVideos( [...videos] );
 
         //Get all the user's videos data
@@ -62,9 +59,10 @@ const App = () => {
         return new web3.eth.Contract( DVideo.abi, address );
     }
 
-    const getAllVideos = async (videoCount, contract) => Promise.all( 
-        [...Array(videoCount)].map(async (count) => await contract.methods.videos(count).call()) 
-    );
+    const getAllVideos = async (videoCount, contract) => {
+        const arr = [...Array(Number(videoCount))].map((x,i) => i+1);
+        return Promise.all( arr.map(async (count) => await contract.methods.videos(count).call()) );
+    }
 
     const sendFileToIpfs = async buffer => {
         const result = await ipfs.add(buffer);
@@ -81,15 +79,16 @@ const App = () => {
 
     const addNewVideo = async () => {
         setVideoCount( videoCount + 1 );
-        const video = await contract.methods.videos(videoCount);
+        const video = await contract.methods.videos(videoCount).call();
         setVideos( [...videos, video] );
     }
 
     const uploadVideo = async fileData => {
+        setLoader(true);
         const ipfsData = await sendFileToIpfs(fileData.file);
         await saveFileToContract(ipfsData.path, fileData.title, fileData.description);
         await addNewVideo();
-        console.log('videos', videos)
+        setLoader(false);
     }
     
     useEffect(
