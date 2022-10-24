@@ -112,15 +112,17 @@ const App = () => {
                 <Grid2 sm={3}> <Upload uploadVideo={uploadVideo} /> </Grid2>
                 <Grid2 sm={9}> <Display videos={videos} /> </Grid2>
             </Grid2>
-            // {
-            //     !loader && 
-            //     <Alert severity="success" onClose={ () => {} }>
-            //         <AlertTitle>Success !</AlertTitle>
-            //         <Typography variant="body1">Upload was a success</Typography> 
-            //     </Alert>
-            // }
+            
         </Container>
     );
 }
 
 export default App;
+
+// {
+//     !loader && 
+//     <Alert severity="success" onClose={ () => {} }>
+//         <AlertTitle>Success !</AlertTitle>
+//         <Typography variant="body1">Upload was a success</Typography> 
+//     </Alert>
+// }
