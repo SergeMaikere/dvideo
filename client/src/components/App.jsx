@@ -8,6 +8,7 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Typography from '@mui/material/Typography';
 import Upload from './Upload';
+import Display from './Display';
 import { create } from 'ipfs-http-client';
 
 const ipfs = create('/ip4/127.0.0.1/tcp/5001')
@@ -44,12 +45,13 @@ const App = () => {
 
         //Get video count from contract
         const videoCount = await contract.methods.videoCount().call();
+        console.log('videoCount', videoCount)
         setVideoCount(Number(videoCount));
         
         //Get all the videos data
         const videos = await getAllVideos( videoCount, contract );
         setVideos( [...videos] );
-
+        
         //Get all the user's videos data
     }
 
@@ -61,7 +63,7 @@ const App = () => {
 
     const getAllVideos = async (videoCount, contract) => {
         const arr = [...Array(Number(videoCount))].map((x,i) => i+1);
-        return Promise.all( arr.map(async (count) => await contract.methods.videos(count).call()) );
+        return Promise.all( arr.map(async count => await contract.methods.videos(count).call()) );
     }
 
     const sendFileToIpfs = async buffer => {
@@ -70,9 +72,9 @@ const App = () => {
         return result;
     }
 
-    const saveFileToContract = async (path, title, description) => {
+    const saveFileToContract = async (path, title, description, fileName) => {
         await contract.methods
-        .uploadVideo( path, title, description )
+        .uploadVideo( path, title, description, fileName )
         .send( {from: account} )
         .on('transactionHash', hash => console.log('File saved') );;
     }
@@ -84,9 +86,10 @@ const App = () => {
     }
 
     const uploadVideo = async fileData => {
+        console.log('fileData', fileData)
         setLoader(true);
         const ipfsData = await sendFileToIpfs(fileData.file);
-        await saveFileToContract(ipfsData.path, fileData.title, fileData.description);
+        await saveFileToContract(ipfsData.path, fileData.title, fileData.description, fileData.fileName);
         await addNewVideo();
         setLoader(false);
     }
@@ -106,16 +109,16 @@ const App = () => {
         <Container maxWidth="lg">
 
             <Grid2 container spacing={2}>
-                <Grid2 sm={3}></Grid2>
-                <Grid2 sm={9}><Upload uploadVideo={uploadVideo} /></Grid2>
+                <Grid2 sm={3}> <Upload uploadVideo={uploadVideo} /> </Grid2>
+                <Grid2 sm={9}> <Display videos={videos} /> </Grid2>
             </Grid2>
-            {
-                !loader && 
-                <Alert severity="success" onClose={ () => {} }>
-                    <AlertTitle>Success !</AlertTitle>
-                    <Typography variant="body1">Upload was a success</Typography> 
-                </Alert>
-            }
+            // {
+            //     !loader && 
+            //     <Alert severity="success" onClose={ () => {} }>
+            //         <AlertTitle>Success !</AlertTitle>
+            //         <Typography variant="body1">Upload was a success</Typography> 
+            //     </Alert>
+            // }
         </Container>
     );
 }

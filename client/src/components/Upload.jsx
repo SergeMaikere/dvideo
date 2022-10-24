@@ -25,7 +25,7 @@ const Upload = ( props ) => {
 
     const handleSubmit = e => {
         e.preventDefault();
-        props.uploadVideo( {title: title, description: description, file: file} );
+        props.uploadVideo( {title: title, description: description, fileName: fileName, file: file} );
     } 
 
     return(
