@@ -1,21 +1,10 @@
 import React from 'react';
-import ReactPlayer from 'react-player/lazy/index.js';
+import Video from './Video';
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 
 const Display = props => {
     
-    const displayAllVideos = videos => videos.map( 
-        video => {
-            const url = `http://localhost:8080/ipfs/${video.hash}?filename=${video.fileName}`;
-            return (
-                <Paper sx={{maxWidth: '400px'}} elevation={6} key={video.id}>
-                    <h4> { video.title } </h4>
-                    <video src={url} controls width="320" height="240"></video>
-                </Paper>
-            ) 
-        }
-    )
+    const displayAllVideos = videos => videos.map( video =>  <Video key={video.id} video ={video} /> );
  
     return <Box sx= {{display: 'flex', flexWrap: 'wrap'}}> { displayAllVideos(props.videos) } </Box>
 }
