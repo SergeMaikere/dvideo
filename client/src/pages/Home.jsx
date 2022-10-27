@@ -1,21 +1,17 @@
-//import { EthProvider } from "./contexts/EthContext";
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import DVideo from '../contracts/DVideo.json';
 import Container from '@mui/material/Container';
 import Grid2 from '@mui/material/Unstable_Grid2';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import Typography from '@mui/material/Typography';
-import Upload from './Upload';
+import Upload from '../components/Upload';
+import Display from '../components/Display';
 import { create } from 'ipfs-http-client';
 
-//const auth = `Basic ${Buffer(`${process.env.REACT_APP_INFURA_API_KEY}:${process.env.REACT_APP_INFURA_SECRET}`).toString('base64')}`
 const ipfs = create('/ip4/127.0.0.1/tcp/5001')
 
 const ERROR_ETHEREUM_BROWSER = 'Non-ethereum browser detected. You should consider using Metamask';
 
-const App = () => {
+const Home = props => {
 
     const [ loader, setLoader ] = useState( true );
     const [ account, setAccount ] = useState( '0x0' );
@@ -45,14 +41,13 @@ const App = () => {
 
         //Get video count from contract
         const videoCount = await contract.methods.videoCount().call();
-        //console.log('videCount', videoCount);
-        setVideoCount(videoCount);
+        console.log('videoCount', videoCount)
+        setVideoCount(Number(videoCount));
         
         //Get all the videos data
         const videos = await getAllVideos( videoCount, contract );
-        //console.log('videos', videos);
         setVideos( [...videos] );
-
+        
         //Get all the user's videos data
     }
 
@@ -62,9 +57,10 @@ const App = () => {
         return new web3.eth.Contract( DVideo.abi, address );
     }
 
-    const getAllVideos = async (videoCount, contract) => Promise.all( 
-        [...Array(videoCount)].map(async (count) => await contract.methods.videos(count).call()) 
-    );
+    const getAllVideos = async (videoCount, contract) => {
+        const arr = [...Array(Number(videoCount))].map((x,i) => i+1);
+        return Promise.all( arr.map(async count => await contract.methods.videos(count).call()) );
+    }
 
     const sendFileToIpfs = async buffer => {
         const result = await ipfs.add(buffer);
@@ -72,24 +68,25 @@ const App = () => {
         return result;
     }
 
-    const saveFileToContract = async (path, title, description) => {
+    const saveFileToContract = async (path, title, description, fileName) => {
         await contract.methods
-        .uploadVideo( path, title, description )
+        .uploadVideo( path, title, description, fileName )
         .send( {from: account} )
         .on('transactionHash', hash => console.log('File saved') );;
     }
 
     const addNewVideo = async () => {
         setVideoCount( videoCount + 1 );
-        const video = await contract.methods.videos(videoCount);
+        const video = await contract.methods.videos(videoCount).call();
         setVideos( [...videos, video] );
     }
 
     const uploadVideo = async fileData => {
+        setLoader(true);
         const ipfsData = await sendFileToIpfs(fileData.file);
-        await saveFileToContract(ipfsData.path, fileData.title, fileData.description);
+        await saveFileToContract(ipfsData.path, fileData.title, fileData.description, fileData.fileName);
         await addNewVideo();
-        console.log('videos', videos)
+        setLoader(false);
     }
     
     useEffect(
@@ -102,23 +99,16 @@ const App = () => {
             init();
         }, []
     )
- 
+
     return (
         <Container maxWidth="lg">
 
-            <Grid2 container spacing={2}>
-                <Grid2 sm={3}></Grid2>
-                <Grid2 sm={9}><Upload uploadVideo={uploadVideo} /></Grid2>
-            </Grid2>
-            {
-                !loader && 
-                <Alert severity="success" onClose={ () => {} }>
-                    <AlertTitle>Success !</AlertTitle>
-                    <Typography variant="body1">Upload was a success</Typography> 
-                </Alert>
-            }
+            <Grid2 py={6}><Display videos={videos} /></Grid2>
+            <Grid2> <Upload uploadVideo={uploadVideo} /> </Grid2>
+            
         </Container>
     );
-}
+};
 
-export default App;
+
+export default Home;

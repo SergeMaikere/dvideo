@@ -12,6 +12,7 @@ contract DVideo {
         uint id;
         string title;
         string description;
+        string fileName;
         string hash;
         address author;
         uint tips;
@@ -25,6 +26,7 @@ contract DVideo {
         uint id,
         string title,
         string description,
+        string fileName,
         string hash,
         address author,
         uint tips
@@ -35,6 +37,7 @@ contract DVideo {
         uint id,
         string title,
         string description,
+        string fileName,
         string hash,
         address payable author,
         uint tips
@@ -66,16 +69,16 @@ contract DVideo {
      * @param      _title        The title
      * @param      _description  The description
      */
-    function uploadVideo ( string memory _videoHash, string memory _title, string memory _description) public isRealString(_videoHash) isRealString(_title) isAuthor() {  
+    function uploadVideo ( string memory _videoHash, string memory _title, string memory _description, string memory _fileName) public isRealString(_videoHash) isRealString(_title) isAuthor() {  
 
         //Update count
         videoCount++;
 
         //Upload mapping
-        videos[videoCount] = Video(videoCount, _title, _description, _videoHash, msg.sender, 0);
+        videos[videoCount] = Video(videoCount, _title, _description, _fileName, _videoHash, msg.sender, 0);
 
         //Trigger Event
-        emit VideoCreated(videoCount, _title, _description, _videoHash, msg.sender, 0);
+        emit VideoCreated(videoCount, _title, _description, _fileName, _videoHash, msg.sender, 0);
     }
 
     /**
@@ -100,7 +103,7 @@ contract DVideo {
         videos[ _id ] = myVideo;
 
         //Emit event
-        emit VideoTipped( _id, myVideo.title, myVideo.description, myVideo.hash, author, myVideo.tips  );
+        emit VideoTipped( _id, myVideo.title, myVideo.description, myVideo.fileName, myVideo.hash, author, myVideo.tips  );
     }
 
 }
