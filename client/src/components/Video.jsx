@@ -12,7 +12,7 @@ import ShareIcon from '@mui/icons-material/Share';
 
 const Video = props => {
     return (
-        <Paper elevation={3} sx={{maxWidth:"360px"}}>
+        <Paper elevation={3} sx={{maxWidth:"360px"}} sx={{mr: 1}}>
             <CardMedia
                 component="video"
                 height="200"

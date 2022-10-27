@@ -1,21 +1,17 @@
-//import { EthProvider } from "./contexts/EthContext";
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import DVideo from '../contracts/DVideo.json';
 import Container from '@mui/material/Container';
 import Grid2 from '@mui/material/Unstable_Grid2';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import Typography from '@mui/material/Typography';
-import Upload from './Upload';
-import Display from './Display';
+import Upload from '../components/Upload';
+import Display from '../components/Display';
 import { create } from 'ipfs-http-client';
 
 const ipfs = create('/ip4/127.0.0.1/tcp/5001')
 
 const ERROR_ETHEREUM_BROWSER = 'Non-ethereum browser detected. You should consider using Metamask';
 
-const App = () => {
+const Home = props => {
 
     const [ loader, setLoader ] = useState( true );
     const [ account, setAccount ] = useState( '0x0' );
@@ -86,7 +82,6 @@ const App = () => {
     }
 
     const uploadVideo = async fileData => {
-        console.log('fileData', fileData)
         setLoader(true);
         const ipfsData = await sendFileToIpfs(fileData.file);
         await saveFileToContract(ipfsData.path, fileData.title, fileData.description, fileData.fileName);
@@ -104,25 +99,16 @@ const App = () => {
             init();
         }, []
     )
- 
+
     return (
         <Container maxWidth="lg">
 
-            <Grid2 container spacing={2}>
-                <Grid2 sm={3}> <Upload uploadVideo={uploadVideo} /> </Grid2>
-                <Grid2 sm={9}> <Display videos={videos} /> </Grid2>
-            </Grid2>
+            <Grid2 py={6}><Display videos={videos} /></Grid2>
+            <Grid2> <Upload uploadVideo={uploadVideo} /> </Grid2>
             
         </Container>
     );
-}
+};
 
-export default App;
 
-// {
-//     !loader && 
-//     <Alert severity="success" onClose={ () => {} }>
-//         <AlertTitle>Success !</AlertTitle>
-//         <Typography variant="body1">Upload was a success</Typography> 
-//     </Alert>
-// }
+export default Home;
