@@ -62,15 +62,15 @@ const Home = props => {
         return Promise.all( arr.map(async count => await contract.methods.videos(count).call()) );
     }
 
-    const sendFileToIpfs = async buffer => {
-        const result = await ipfs.add(buffer);
+    const sendFileToIpfs = async file => {
+        const result = await ipfs.add(file);
         if (result.error) alert('Upload to the cloud failed');
         return result;
     }
 
-    const saveFileToContract = async (path, title, description, fileName) => {
+    const saveFileToContract = async (path, posterPath, title, description, fileName, channelName) => {
         await contract.methods
-        .uploadVideo( path, title, description, fileName )
+        .uploadVideo( path, posterPath, title, description, fileName, channelName, Date.now() )
         .send( {from: account} )
         .on('transactionHash', hash => console.log('File saved') );;
     }
@@ -83,11 +83,14 @@ const Home = props => {
 
     const uploadVideo = async fileData => {
         setLoader(true);
-        const ipfsData = await sendFileToIpfs(fileData.file);
-        await saveFileToContract(ipfsData.path, fileData.title, fileData.description, fileData.fileName);
+        const ipfsFileData = await sendFileToIpfs(fileData.file);
+        const ipfsPosterData = await sendFileToIpfs(fileData.posterFile);
+        await saveFileToContract(ipfsFileData.path, ipfsPosterData.path, fileData.title, fileData.description, fileData.fileName, getChannelName());
         await addNewVideo();
         setLoader(false);
     }
+
+    const getChannelName = () => 'Generique Lambda';
     
     useEffect(
         () => {

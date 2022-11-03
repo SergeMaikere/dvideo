@@ -13,15 +13,15 @@ const VideoCard = props => {
         <Card elevation={0} sx={{maxWidth:"360px", mr: "6px"}}>
             <CardActionArea>
                 <CardMedia
-                    component="video"
-                    image={`http://localhost:8080/ipfs/${props.video.hash}?filename=${props.video.fileName}`} 
+                    component="img"
+                    src={`http://localhost:8080/ipfs/${props.video.posterHash}`} 
                     sx={{maxHeight:"200px"}} />
                 <CardContent>
                     <Typography variant="h5">{props.video.title}</Typography>
-                    <Typography variant="subtitle1">Channel name</Typography>
+                    <Typography variant="subtitle1">{props.video.channelName}</Typography>
                     <Stack direction="row" spacing={1} divider={ <Divider orientation="vertical" flexItem /> }>
-                        <Typography variant="caption">6k Views</Typography>
-                        <Typography variant="caption">2 days ago</Typography>
+                        <Typography variant="caption">{`${props.video.views} views`}</Typography>
+                        <Typography variant="caption">{props.video.created_at}</Typography>
                     </Stack>
                 </CardContent>
             </CardActionArea>
