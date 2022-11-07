@@ -7,6 +7,7 @@ import CardMedia from '@mui/material/CardMedia';
 import CardActionArea from '@mui/material/CardActionArea';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
+import useSince from '../hooks/useSince';
 
 const VideoCard = props => {
     return (
@@ -21,7 +22,7 @@ const VideoCard = props => {
                     <Typography variant="subtitle1">{props.video.channelName}</Typography>
                     <Stack direction="row" spacing={1} divider={ <Divider orientation="vertical" flexItem /> }>
                         <Typography variant="caption">{`${props.video.views} views`}</Typography>
-                        <Typography variant="caption">{props.video.created_at}</Typography>
+                        <Typography variant="caption">{useSince(props.video.created_at)}</Typography>
                     </Stack>
                 </CardContent>
             </CardActionArea>
