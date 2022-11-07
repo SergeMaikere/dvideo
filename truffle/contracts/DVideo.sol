@@ -13,9 +13,13 @@ contract DVideo {
         string title;
         string description;
         string fileName;
+        string channelName;
         string hash;
+        string posterHash;
         address author;
+        uint views;
         uint tips;
+        uint created_at;
     }
 
     // Id -> Struct mapping
@@ -27,9 +31,13 @@ contract DVideo {
         string title,
         string description,
         string fileName,
+        string channelName,
         string hash,
+        string posterHash,
         address author,
-        uint tips
+        uint views,
+        uint tips,
+        uint created_at
     );
 
     // Event the uploader was tipped
@@ -38,9 +46,13 @@ contract DVideo {
         string title,
         string description,
         string fileName,
+        string channelName,
         string hash,
+        string posterHash,
         address payable author,
-        uint tips
+        uint views,
+        uint tips,
+        uint created_at
     );
   
     constructor () { }
@@ -69,16 +81,47 @@ contract DVideo {
      * @param      _title        The title
      * @param      _description  The description
      */
-    function uploadVideo ( string memory _videoHash, string memory _title, string memory _description, string memory _fileName) public isRealString(_videoHash) isRealString(_title) isAuthor() {  
+    function uploadVideo ( 
+        string memory _videoHash, 
+        string memory _posterHash, 
+        string memory _title, 
+        string memory _description, 
+        string memory _fileName,
+        string memory _channelName,
+        uint _created_at) public isRealString(_videoHash) isRealString(_title) isAuthor() {
 
         //Update count
         videoCount++;
 
         //Upload mapping
-        videos[videoCount] = Video(videoCount, _title, _description, _fileName, _videoHash, msg.sender, 0);
+        videos[videoCount] = Video(
+            videoCount, 
+            _title, 
+            _description, 
+            _fileName,
+            _channelName ,
+            _videoHash, 
+            _posterHash, 
+            msg.sender, 
+            0,
+            0,
+            _created_at
+        );
 
         //Trigger Event
-        emit VideoCreated(videoCount, _title, _description, _fileName, _videoHash, msg.sender, 0);
+        emit VideoCreated(
+            videoCount, 
+            _title, 
+            _description, 
+            _fileName,
+            _channelName ,
+            _videoHash, 
+            _posterHash, 
+            msg.sender, 
+            0,
+            0,
+            _created_at
+        );
     }
 
     /**
@@ -91,7 +134,8 @@ contract DVideo {
         Video memory myVideo = videos[ _id ];
 
         //Get the owner
-        address payable author = payable( myVideo.author );
+        address payable author;
+        author = payable( myVideo.author );
 
         //Transfer tip to owner
         author.transfer( msg.value );
@@ -103,7 +147,30 @@ contract DVideo {
         videos[ _id ] = myVideo;
 
         //Emit event
-        emit VideoTipped( _id, myVideo.title, myVideo.description, myVideo.fileName, myVideo.hash, author, myVideo.tips  );
+        emit VideoTipped( 
+            _id, 
+            myVideo.title, 
+            myVideo.description, 
+            myVideo.fileName,
+            myVideo.channelName ,
+            myVideo.hash, 
+            myVideo.posterHash, 
+            author,
+            myVideo.views, 
+            myVideo.tips,
+            myVideo.created_at 
+        );
+    }
+
+    function incrementViews ( uint _id ) public isVideo(_id) {
+        //Get Video data
+        Video memory myVideo = videos[ _id ];
+
+        //Increment views
+        myVideo.views++;
+
+        //Update the contract
+        videos[ _id ] = myVideo; 
     }
 
 }
