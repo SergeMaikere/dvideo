@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Drawer from '@mui/material/Drawer';
@@ -20,14 +21,48 @@ import SmartDisplayOutlinedIcon from '@mui/icons-material/SmartDisplayOutlined';
 import ThumbUpOffAltOutlinedIcon from '@mui/icons-material/ThumbUpOffAltOutlined';
 
 
-
-
 const Menu = () => {
 
     const [ open, setOpen ] = useState(false);
 
     const handleDrawerOpen = () => setOpen(true);
     const handleDrawerClose = () => setOpen(false);
+
+    const items = [
+
+        { divider: true },
+        { to: '/', text: 'Home', icon: <HomeIcon/> },
+        { to: '/', text: 'Subscription', icon: <AutoAwesomeMotionIcon/> },
+        { to: '/', text: 'Trending', icon: <LocalFireDepartmentIcon/> },
+        { divider: true },
+        { to: '/', text: 'History', icon: <LocalFireDepartmentIcon/> },
+        { to: '/', text: 'Liked Videos', icon: <LocalFireDepartmentIcon/> },
+        { divider: true },
+        { to: '/upload', text: 'Your Studio', icon: <LocalFireDepartmentIcon/> },
+
+    ]
+
+    const displayMenu = arrObj => arrObj.map(
+        (obj, i) => {
+            
+            if ( obj.hasOwnProperty('divider') ) return <Divider key={i} />;
+            
+            return (
+                
+                <List key={i}>
+                    <ListItem disablePadding>
+                    <Link to={obj.to}>
+                        <ListItemButton>
+                            <ListItemIcon> {obj.icon} </ListItemIcon>
+                            <ListItemText> {obj.text} </ListItemText>
+                        </ListItemButton>
+                    </Link>
+                    </ListItem> 
+                </List> 
+            
+            )
+        }
+    )
 
     return (
         <Box>
@@ -40,65 +75,10 @@ const Menu = () => {
                 <IconButton onClick={handleDrawerClose}> 
                     <ChevronLeftIcon/> 
                 </IconButton>
-                <Divider />
-                <List>
-                    <ListItem disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon> <HomeIcon/> </ListItemIcon>
-                            <ListItemText> Home </ListItemText>
-                        </ListItemButton>
-                    </ListItem> 
-                </List>
-                <List>
-                    <ListItem disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon> <AutoAwesomeMotionIcon/> </ListItemIcon>
-                            <ListItemText> Subscriptions </ListItemText>
-                        </ListItemButton>
-                    </ListItem> 
-                </List>
-                <List>
-                    <ListItem disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon> <LocalFireDepartmentIcon/> </ListItemIcon>
-                            <ListItemText> Trending </ListItemText>
-                        </ListItemButton>
-                    </ListItem> 
-                </List>
-                <Divider />
-                <List>
-                    <ListItem disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon> <VideoLibraryIcon/> </ListItemIcon>
-                            <ListItemText> Library </ListItemText>
-                        </ListItemButton>
-                    </ListItem> 
-                </List>
-                <List>
-                    <ListItem disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon> <HistoryIcon/> </ListItemIcon>
-                            <ListItemText> History </ListItemText>
-                        </ListItemButton>
-                    </ListItem> 
-                </List>
-                <List>
-                    <ListItem disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon> <SmartDisplayOutlinedIcon/> </ListItemIcon>
-                            <ListItemText> Your Videos </ListItemText>
-                        </ListItemButton>
-                    </ListItem> 
-                </List>
-                <List>
-                    <ListItem disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon> <ThumbUpOffAltOutlinedIcon/> </ListItemIcon>
-                            <ListItemText> Liked Videos </ListItemText>
-                        </ListItemButton>
-                    </ListItem> 
-                </List>
-                <Divider />
+                {
+                    displayMenu(items)
+                }
+                 
             </Drawer>
         </Box>
     );

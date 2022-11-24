@@ -1,18 +1,70 @@
 //import { EthProvider } from "./contexts/EthContext";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import DVideo from './contracts/DVideo.json';
+import Web3 from 'web3';
 import Home from './pages/Home';
+import Video from './pages/Video';
+import Upload from './pages/Upload';
 import Header from './components/Header';
 import Menu from './components/Menu';
 
+const ERROR_ETHEREUM_BROWSER = 'Non-ethereum browser detected. You should consider using Metamask';
+
 const App = () => {
+
+    const [ account, setAccount ] = useState( '0x0' );
+    const [ contract, setContract ] = useState( {} );
+
+
+    
+
+    const getContract = async web3 => {
+        const id = await web3.eth.net.getId();
+        const address = DVideo.networks[ id ].address;
+        return new web3.eth.Contract( DVideo.abi, address );
+    }
+
+    useEffect(
+        () => {
+            const loadWeb3 = async () => window.ethereum ? enableMetamask() : ( window.web3 ? new Web3(Web3.currentProvider) : alert(ERROR_ETHEREUM_BROWSER) );
+
+            const enableMetamask = async () => {
+                await window.ethereum.request( {method: 'eth_requestAccounts'} );
+                return new Web3(window.ethereum);
+            }
+
+            const getBlockChainData = async web3 => {
+
+                //Get Account adress from metamask
+                const [ accounts, error ] = await web3.eth.getAccounts();
+                if ( error ) alert('No account detected');
+                //console.log('Accounts', accounts)
+                setAccount(accounts);
+
+                //Get contract
+                const contract = await getContract(web3);
+                //console.log('Contract', contract);
+                setContract(contract);
+            }
+
+            const init = async () => {
+                const web3 = await loadWeb3();
+                await getBlockChainData(web3);
+            }
+
+            init();
+        }, []
+    )
 
     return (
         <Router>
             <Header/>
             <Menu/>
             <Routes>
-                <Route path='/' element={<Home />} />
+                <Route path='/' element={<Home contract={contract} />} />
+                <Route path='/upload' element={<Upload account={account} contract={contract} />} />
+                <Route path='/video/:videoId' element={<Video contract={contract} />} />
             </Routes>
         </Router>
     );
