@@ -54,6 +54,21 @@ contract DVideo {
         uint tips,
         uint created_at
     );
+
+     // Event the video was viewed
+    event VideoViewed(
+        uint id,
+        string title,
+        string description,
+        string fileName,
+        string channelName,
+        string hash,
+        string posterHash,
+        address author,
+        uint views,
+        uint tips,
+        uint created_at
+    );
   
     constructor () { }
 
@@ -167,10 +182,24 @@ contract DVideo {
         Video memory myVideo = videos[ _id ];
 
         //Increment views
-        myVideo.views++;
+        myVideo.views = myVideo.views + 1;
 
         //Update the contract
         videos[ _id ] = myVideo; 
+
+        emit VideoViewed(
+            _id, 
+            myVideo.title, 
+            myVideo.description, 
+            myVideo.fileName,
+            myVideo.channelName ,
+            myVideo.hash, 
+            myVideo.posterHash, 
+            myVideo.author,
+            myVideo.views, 
+            myVideo.tips,
+            myVideo.created_at 
+        );
     }
 
 }
