@@ -49,7 +49,7 @@ contract DVideo {
         string channelName,
         string hash,
         string posterHash,
-        address payable author,
+        address author,
         uint views,
         uint tips,
         uint created_at
@@ -177,29 +177,18 @@ contract DVideo {
         );
     }
 
-    function incrementViews ( uint _id ) public isVideo(_id) {
+    function incrementViews ( uint _id ) public isVideo(_id) returns(Video memory video) {
         //Get Video data
-        Video memory myVideo = videos[ _id ];
+        Video memory myVideo = videos[_id];
 
         //Increment views
         myVideo.views = myVideo.views + 1;
 
         //Update the contract
-        videos[ _id ] = myVideo; 
+        videos[_id].views = myVideo.views; 
 
-        emit VideoViewed(
-            _id, 
-            myVideo.title, 
-            myVideo.description, 
-            myVideo.fileName,
-            myVideo.channelName ,
-            myVideo.hash, 
-            myVideo.posterHash, 
-            myVideo.author,
-            myVideo.views, 
-            myVideo.tips,
-            myVideo.created_at 
-        );
+        Video memory video = videos[_id];
+        return video;
     }
 
 }

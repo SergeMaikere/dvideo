@@ -16,8 +16,9 @@ const Video = props => {
     const { videoId } = useParams();
 
     const addView = async () => {
-        await props.contract.methods.incrementViews(Number(videoId)).call();
-        console.log('addView');
+        const result = await props.contract.methods.incrementViews(Number(videoId)).call();
+        const video = await props.contract.methods.videos(Number(videoId)).call();
+        console.log('addView', result);
     }
 
     useEffect(
@@ -27,13 +28,13 @@ const Video = props => {
 
                 if (!video) return;
 
-                await props.contract.events.VideoViewed( 
-                    {}, 
-                    (error, data) => {
-                        if (error)console.log('error', error) 
-                        if (data)console.log('data', data) 
-                    }
-                )
+                // await props.contract.events.VideoViewed( 
+                //     {}, 
+                //     (error, data) => {
+                //         if (error)console.log('error', error) 
+                //         if (data)console.log('data', data) 
+                //     }
+                // )
 
                 setTitle(video.title);
                 setDescription(video.description);
