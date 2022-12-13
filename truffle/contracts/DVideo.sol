@@ -177,18 +177,29 @@ contract DVideo {
         );
     }
 
-    function incrementViews ( uint _id ) public isVideo(_id) returns(Video memory video) {
+    function incrementViews ( uint _id ) public isVideo(_id) {
         //Get Video data
         Video memory myVideo = videos[_id];
 
         //Increment views
-        myVideo.views = myVideo.views + 1;
+        myVideo.views += 1;
 
         //Update the contract
-        videos[_id].views = myVideo.views; 
+        videos[_id] = myVideo; 
 
-        Video memory video = videos[_id];
-        return video;
+         emit VideoViewed( 
+            myVideo.id, 
+            myVideo.title, 
+            myVideo.description, 
+            myVideo.fileName,
+            myVideo.channelName ,
+            myVideo.hash, 
+            myVideo.posterHash, 
+            myVideo.author,
+            myVideo.views, 
+            myVideo.tips,
+            myVideo.created_at 
+        );
     }
 
 }
