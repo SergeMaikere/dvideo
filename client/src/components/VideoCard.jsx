@@ -18,7 +18,7 @@ const VideoCard = props => {
                     <CardMedia
                         component="img"
                         src={`http://localhost:8080/ipfs/${props.video.posterHash}`} 
-                        sx={{maxHeight:"200px"}} />
+                        sx={{maxHeight:"200px", maxWidth: "150px"}} />
                     <CardContent>
                         <Typography variant="h5">{props.video.title}</Typography>
                         <Typography variant="subtitle1">{props.video.channelName}</Typography>

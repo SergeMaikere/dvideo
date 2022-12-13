@@ -60,11 +60,10 @@ const App = () => {
     return (
         <Router>
             <Header/>
-            <Menu/>
             <Routes>
                 <Route path='/' element={<Home contract={contract} />} />
-                <Route path='/upload' element={<Upload account={account} contract={contract} />} />
-                <Route path='/video/:videoId' element={<Video contract={contract} />} />
+                <Route path='/upload' element={<Upload contract={contract} account={account} />} />
+                <Route path='/video/:videoId' element={<Video contract={contract} account={account} />} />
             </Routes>
         </Router>
     );

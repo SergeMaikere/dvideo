@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getVideoCount, getAllVideos, getVideo, isObjectEmpty } from '../utils/Helper';
+import { getVideoCount, getAllVideos, isObjectEmpty } from '../utils/Helper';
 
 const useAllVideos = contract => {
 
@@ -11,7 +11,7 @@ const useAllVideos = contract => {
 
             const getAllVideosDatas = async contract => {
                 if ( isObjectEmpty(contract) ) return;
-
+                
                 //Get videoCount
                 const myVideoCount = await getVideoCount(contract)
                 
