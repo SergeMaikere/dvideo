@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
-
 import Paper from '@mui/material/Paper';
+import Container from '@mui/material/Container';
 
 export const Item = styled(Paper)`
     margin-top: 12px; 
@@ -13,4 +13,8 @@ export const InputNinja = styled.input`
     width: 0;
     float: left;
     pointer-events: none;
+`;
+
+export const PageContainer = styled(Container)`
+    margin-top: 90px;
 `

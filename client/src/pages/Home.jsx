@@ -1,14 +1,14 @@
 import React from 'react';
-import Container from '@mui/material/Container';
+import { PageContainer } from '../style/style';
 import Display from '../components/Display';
 import useAllVideos from '../hooks/useAllVideos';
 
 const Home = props => {
 
     return (
-        <Container maxWidth="lg">
+        <PageContainer maxWidth="lg">
             <Display videos={useAllVideos(props.contract)} />
-        </Container>
+        </PageContainer>
     );
 };
 
