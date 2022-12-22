@@ -16,12 +16,6 @@ const App = () => {
     const [ account, setAccount ] = useState( '0x0' );
     const [ contract, setContract ] = useState( {} );
 
-    const getContract = async web3 => {
-        const id = await web3.eth.net.getId();
-        const address = DVideo.networks[ id ].address;
-        return new web3.eth.Contract( DVideo.abi, address );
-    }
-
     useEffect(
         () => {
             const loadWeb3 = async () => window.ethereum ? enableMetamask() : ( window.web3 ? new Web3(Web3.currentProvider) : alert(ERROR_ETHEREUM_BROWSER) );
@@ -31,6 +25,12 @@ const App = () => {
                 return new Web3(window.ethereum);
             }
 
+            const getContract = async web3 => {
+                const id = await web3.eth.net.getId();
+                const address = DVideo.networks[ id ].address;
+                return new web3.eth.Contract( DVideo.abi, address );
+            }
+            
             const getBlockChainData = async web3 => {
 
                 //Get Account adress from metamask

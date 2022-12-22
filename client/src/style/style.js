@@ -16,5 +16,5 @@ export const InputNinja = styled.input`
 `;
 
 export const PageContainer = styled(Container)`
-    margin-top: 90px;
+    margin: 60px 0;
 `

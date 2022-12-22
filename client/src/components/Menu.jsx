@@ -83,7 +83,10 @@ const Menu = () => {
     }
 
     const handleSearch = e => setSearchValue(e.target.value);
-    const handleSubmit = () => console.log('search', searchValue);
+    const handleSubmit = () => {
+        console.log('search', searchValue);
+        setSearchValue('');
+    }
     const handlePressEnter = e => { 
         if (e.key !== 'Enter') return;
         handleSubmit(); 
@@ -91,7 +94,7 @@ const Menu = () => {
 
     return (
         <Box>
-            <AppBar color="transparent">
+            <AppBar color="transparent" position="sticky">
                 <ToolBar sx={{mx:"6px"}}>
                      <IconButton onClick={handleDrawerOpen}> 
                         <MenuIcon/> 
@@ -103,6 +106,7 @@ const Menu = () => {
                         autoFocus={true}
                         edge="end"
                         sx={{mx:"auto"}}
+                        value={searchValue}
                         endAdornment={getSearchButton()}
                         onChange={handleSearch}
                         onKeyUp={handlePressEnter}/>
