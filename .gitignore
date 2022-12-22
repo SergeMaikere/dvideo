@@ -21,7 +21,8 @@ coverage
 .env.production.local
 
 # Editor
-.vscode
+.sublime-project
+.sublime-workspace
 
 # Misc.
 .DS_Store

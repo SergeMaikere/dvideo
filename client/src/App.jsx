@@ -6,8 +6,8 @@ import Web3 from 'web3';
 import Home from './pages/Home';
 import Video from './pages/Video';
 import Upload from './pages/Upload';
-import Header from './components/Header';
 import Menu from './components/Menu';
+import Cssbaseline from '@mui/material/CssBaseline';
 
 const ERROR_ETHEREUM_BROWSER = 'Non-ethereum browser detected. You should consider using Metamask';
 
@@ -15,15 +15,6 @@ const App = () => {
 
     const [ account, setAccount ] = useState( '0x0' );
     const [ contract, setContract ] = useState( {} );
-
-
-    
-
-    const getContract = async web3 => {
-        const id = await web3.eth.net.getId();
-        const address = DVideo.networks[ id ].address;
-        return new web3.eth.Contract( DVideo.abi, address );
-    }
 
     useEffect(
         () => {
@@ -34,6 +25,12 @@ const App = () => {
                 return new Web3(window.ethereum);
             }
 
+            const getContract = async web3 => {
+                const id = await web3.eth.net.getId();
+                const address = DVideo.networks[ id ].address;
+                return new web3.eth.Contract( DVideo.abi, address );
+            }
+            
             const getBlockChainData = async web3 => {
 
                 //Get Account adress from metamask
@@ -59,7 +56,8 @@ const App = () => {
 
     return (
         <Router>
-            <Header/>
+            <Cssbaseline />
+            <Menu/>
             <Routes>
                 <Route path='/' element={<Home contract={contract} />} />
                 <Route path='/upload' element={<Upload contract={contract} account={account} />} />

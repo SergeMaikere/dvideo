@@ -103,7 +103,8 @@ contract DVideo {
         string memory _description, 
         string memory _fileName,
         string memory _channelName,
-        uint _created_at) public isRealString(_videoHash) isRealString(_title) isAuthor() {
+        uint _created_at
+        ) public isRealString(_videoHash) isRealString(_title) isAuthor() {
 
         //Update count
         videoCount++;
