@@ -9,26 +9,36 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ShareIcon from '@mui/icons-material/Share';
+import { isObjectEmpty } from '../utils/Helper';
+import { Box } from '@mui/material';
 
 const Video = props => {
+
+    console.log(props.video)
     return (
-        <Paper elevation={3} sx={{maxWidth:"360px"}} sx={{mr: 1}}>
-            <CardMedia
-                component="video"
-                height="200"
-                controls
-                src={`http://localhost:8080/ipfs/${props.video.hash}?filename=${props.video.fileName}`} />
-            <CardContent sx={{py: 0}}>
-                <Typography>{props.video.title}</Typography>
-                <Tooltip title={props.video.description}>
-                    <Typography variant="body2" color="text.secondary" noWrap={true}>{props.video.description}</Typography>
-                </Tooltip>
-            </CardContent>
-            <CardActions sx={{py: 0}}>
-                <IconButton size="sm" aria-label="share"> <ShareIcon color="primary"/> </IconButton>
-                <IconButton size="sm" aria-label="like"> <ThumbUpIcon color="primary"/> </IconButton>
-            </CardActions>
-        </Paper>
+        <Box>
+            {
+                !isObjectEmpty(props.video) &&
+
+                <Paper elevation={3} sx={{maxWidth:"360px"}} sx={{mr: 1}}>
+                    <CardMedia
+                        component="video"
+                        height="200"
+                        controls
+                        src={`http://localhost:8080/ipfs/${props.video.hash}?filename=${props.video.fileName}`} />
+                    <CardContent sx={{py: 0}}>
+                        <Typography>{props.video.title}</Typography>
+                        <Tooltip title={props.video.description}>
+                            <Typography variant="body2" color="text.secondary" noWrap={true}>{props.video.description}</Typography>
+                        </Tooltip>
+                    </CardContent>
+                    <CardActions sx={{py: 0}}>
+                        <IconButton size="sm" aria-label="share"> <ShareIcon color="primary"/> </IconButton>
+                        <IconButton size="sm" aria-label="like"> <ThumbUpIcon color="primary"/> </IconButton>
+                    </CardActions>
+                </Paper>
+            }
+        </Box>
 
     );
 };

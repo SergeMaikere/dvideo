@@ -6,7 +6,7 @@ import useAllVideos from '../hooks/useAllVideos';
 const Home = props => {
 
     return (
-        <PageContainer maxWidth="lg">
+        <PageContainer>
             <Display videos={useAllVideos(props.contract)} />
         </PageContainer>
     );

@@ -7,7 +7,7 @@ const StepperButtons = props => {
     const handleBack = () => props.handleBack();
 
     return (
-        <Box sx={{ mb: 2 }}>
+        <Box sx={{ my: 1 }}>
             <ButtonGroup variant="text">
                 <Button
                 onClick={handleNext}

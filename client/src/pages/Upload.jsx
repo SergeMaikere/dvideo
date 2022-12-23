@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Title, Description, SelectVideo, SelectPoster, UploadVideo } from '../components/UploadComponents';
+import { Title, Description, SelectVideo, SelectPoster, UploadVideo, SubmitNewVideo } from '../components/UploadComponents';
 import StepperButtons from '../components/StepperButtons';
 import { PageContainer } from '../style/style';
 import UploadCtrl from '../controllers/UploadCtrl.js';
 import { useNavigate } from 'react-router-dom';
+import { validateUpload } from '../controllers/validateForm';
 import { 
     Box, 
     Button, 
@@ -24,32 +25,38 @@ const Upload:React.FC = (props) => {
     const [ file, setFile] = useState({});
     const [ posterName, setPosterName ] = useState('');
     const [ posterFile, setPosterFile] = useState({});
+    const [ videoDatas, setVideoDatas ] = useState( {} );
     const [ activeStep, setActiveStep ] = useState( 0 );
 
     const navigate = useNavigate();
 
     const steps = [
-        { label: 'Title', description: 'Title of your video', component: <Title handleChange={setTitle} text={title}/>},
-        { label: 'Description', description: 'Describe your video', component: <Description handleChange={setDescription} text={description}/>},
-        { label: 'Video', description: 'Upload your video', component: <SelectVideo handleChange={setFile} fileName={fileName} getFileName={setFileName}/>},
-        { label: 'Poster', description: 'Poster of your video', component: <SelectPoster handleChange={setPosterFile} fileName={posterName} getFileName={setPosterName}/>}
+        { label: 'Title', error: 'title', component: <Title handleChange={setTitle} text={title}/>},
+        { label: 'Description', error: 'description', component: <Description handleChange={setDescription} text={description}/>},
+        { label: 'Video', error: 'file', component: <SelectVideo handleChange={setFile} fileName={fileName} getFileName={setFileName}/>},
+        { label: 'Poster', error: 'posterFile', component: <SelectPoster handleChange={setPosterFile} fileName={posterName} getFileName={setPosterName}/>},
+        { label: 'Submit', error: 'none', component: <SubmitNewVideo/>},
     ]
 
-
-    const handleNext = e => setActiveStep( prev => prev + 1 );
-    const handleBack = e => setActiveStep( prev => prev - 1 );
-    const isFirstStep = i => i === 0;
-    const isLastStep = ( i, arr ) => i === arr.length -1;
     const getVideoDatas = () => (
         {
             title: title,
             description: description,
             file: file,
-            fileName: fileName,
             posterFile: posterFile,
+            fileName: fileName,
             posterName: posterName
         }
     )
+
+    const displayErrorMessage = step => console.log('invalid at step ' + (step + 1));
+
+    const handleNext = e => {
+        validateUpload(activeStep, getVideoDatas()) ? setActiveStep( prev => prev + 1 ) : displayErrorMessage(activeStep);
+    }
+    const handleBack = e => setActiveStep( prev => prev - 1 );
+    const isFirstStep = i => i === 0;
+    const isLastStep = ( i, arr ) => i === arr.length -1;
 
     const handleUpload = async () => {
         await UploadCtrl( props.contract, props.account, getVideoDatas() );
@@ -85,8 +92,8 @@ const Upload:React.FC = (props) => {
     return (
         <PageContainer>
             <Stack direction='row' justifyContent="center">
-                <Card>
-                    <CardHeader title="Upload my Vid" />
+                <Card sx={{maxWidth: '360px;'}}>
+                    <CardHeader title="My brand new video" />
                     <CardContent>
                         <Stepper activeStep={activeStep} orientation="vertical">
                             { getSteps(steps) }

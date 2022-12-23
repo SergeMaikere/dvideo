@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getVideo } from '../utils/Helper';
-import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
+import { Box, Card, CardContent, CardHeader, Paper, Stack } from '@mui/material';
+import { PageContainer, StyledVideo } from '../style/style';
+import VideoSideBar from '../components/VideoSideBar';
 
 const Video = props => {
     
@@ -43,12 +43,17 @@ const Video = props => {
     )    
 
     return (
-        <Container>
-            <Paper sx={{maxWidth: '600px'}} elevation={1}>
-                <Typography component="h4" align="center">{title}</Typography>
-                <video src={`http://localhost:8080/ipfs/${hash}`} controls onPlay={addView}></video>
-            </Paper>
-        </Container>
+        <PageContainer>
+            <Stack direction="row" justifyContent="center">
+                    <Card flex={9}>
+                        <CardHeader title={title} />
+                        <CardContent>
+                            <StyledVideo src={`http://localhost:8080/ipfs/${hash}`} controls onPlay={addView} />
+                        </CardContent>
+                    </Card>
+                <VideoSideBar />
+            </Stack>
+        </PageContainer>
     );
 };
 

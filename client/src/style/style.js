@@ -17,4 +17,9 @@ export const InputNinja = styled.input`
 
 export const PageContainer = styled(Container)`
     margin: 60px 0;
+    height: 100vh;
+`
+
+export const StyledVideo = styled.video`
+    width: 100%;
 `

@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import DVideo from './contracts/DVideo.json';
 import Web3 from 'web3';
 import Home from './pages/Home';
-import Video from './pages/Video';
+import Video from './pages/VideoPage';
 import Upload from './pages/Upload';
 import Menu from './components/Menu';
 import Cssbaseline from '@mui/material/CssBaseline';
