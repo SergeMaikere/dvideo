@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Title, Description, SelectVideo, SelectPoster, UploadVideo, SubmitNewVideo } from '../components/UploadComponents';
+import { InvalidImageFile, InvalidString, InvalidVideoFile } from '../components/Errors';
 import StepperButtons from '../components/StepperButtons';
 import { PageContainer } from '../style/style';
 import UploadCtrl from '../controllers/UploadCtrl.js';
@@ -27,15 +28,16 @@ const Upload:React.FC = (props) => {
     const [ posterFile, setPosterFile] = useState({});
     const [ videoDatas, setVideoDatas ] = useState( {} );
     const [ activeStep, setActiveStep ] = useState( 0 );
+    const [ isActiveStepValid, setISActiveStepValid ] = useState( true );
 
     const navigate = useNavigate();
 
     const steps = [
-        { label: 'Title', error: 'title', component: <Title handleChange={setTitle} text={title}/>},
-        { label: 'Description', error: 'description', component: <Description handleChange={setDescription} text={description}/>},
-        { label: 'Video', error: 'file', component: <SelectVideo handleChange={setFile} fileName={fileName} getFileName={setFileName}/>},
-        { label: 'Poster', error: 'posterFile', component: <SelectPoster handleChange={setPosterFile} fileName={posterName} getFileName={setPosterName}/>},
-        { label: 'Submit', error: 'none', component: <SubmitNewVideo/>},
+        { label: 'Title', type: 'text', component: <Title handleChange={setTitle} text={title}/>},
+        { label: 'Description', type: 'text', component: <Description handleChange={setDescription} text={description}/>},
+        { label: 'Video', type: 'videoFile', component: <SelectVideo handleChange={setFile} fileName={fileName} getFileName={setFileName}/>},
+        { label: 'Poster', type: 'imageFile', component: <SelectPoster handleChange={setPosterFile} fileName={posterName} getFileName={setPosterName}/>},
+        { label: 'Submit', type: 'submit', component: <SubmitNewVideo/>}
     ]
 
     const getVideoDatas = () => (
@@ -49,12 +51,22 @@ const Upload:React.FC = (props) => {
         }
     )
 
-    const displayErrorMessage = step => console.log('invalid at step ' + (step + 1));
 
     const handleNext = e => {
-        validateUpload(activeStep, getVideoDatas()) ? setActiveStep( prev => prev + 1 ) : displayErrorMessage(activeStep);
+        validateUpload(activeStep, getVideoDatas()) ? toNextStep() : displayErrorMessage(activeStep);
     }
-    const handleBack = e => setActiveStep( prev => prev - 1 );
+
+    const toNextStep = () => {
+        setISActiveStepValid(true);
+        setActiveStep( prev => prev + 1 );
+    }
+
+    const displayErrorMessage = step => setISActiveStepValid(false);
+
+    const handleBack = e => {
+        setISActiveStepValid(true);
+        setActiveStep( prev => prev - 1 );
+    }
     const isFirstStep = i => i === 0;
     const isLastStep = ( i, arr ) => i === arr.length -1;
 
@@ -63,19 +75,23 @@ const Upload:React.FC = (props) => {
         navigate('/');
     }
 
-    const getLastStepCaption = () => <Typography variant="caption">Last step</Typography>;
+    const setErrorAlert = (type, label) => {
+        if (type === 'text') return <InvalidString step={label} />;
+        if (type === 'videoFile') return <InvalidVideoFile step={label} />;
+        if (type === 'imageFile') return <InvalidImageFile step={label} />;
+    }
 
     const getSteps = arr => {
         return arr.map(
             (step, index) => {
                 return(
                     <Step key={step.label}>
-                        <StepLabel optional={isLastStep(index, steps) ? getLastStepCaption() : null}>
+                        <StepLabel optional={isLastStep(index, steps) ? <Typography variant="caption">Last step</Typography> : null}>
                             {step.label}
                         </StepLabel>
                         <StepContent>
                             {step.component}
-
+                            {!isActiveStepValid && setErrorAlert(step.type, step.label)}
                             <StepperButtons 
                             handleNext={handleNext}
                             handleBack={handleBack}
