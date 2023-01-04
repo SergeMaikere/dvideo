@@ -6,6 +6,8 @@ import { PageContainer } from '../style/style';
 import UploadCtrl from '../controllers/UploadCtrl.js';
 import { useNavigate } from 'react-router-dom';
 import { validateUpload } from '../controllers/validateForm';
+import Loading from '../Loading';
+import Snack from '../components/Snack';
 import { 
     Box, 
     Button, 
@@ -20,6 +22,7 @@ import {
 const Upload:React.FC = (props) => {
 
     const [ loader, setLoader ] = useState( false );
+    const [ uploaded, setUploaded] = useState( false );
     const [ title, setTitle ] = useState('');
     const [ description, setDescription ] = useState('');
     const [ fileName, setFileName ] = useState('');
@@ -31,7 +34,7 @@ const Upload:React.FC = (props) => {
     const [ isActiveStepValid, setISActiveStepValid ] = useState( true );
 
     const navigate = useNavigate();
-
+    const closeSnackbar = () => setUploaded(false);
     const steps = [
         { label: 'Title', type: 'text', component: <Title handleChange={setTitle} text={title}/>},
         { label: 'Description', type: 'text', component: <Description handleChange={setDescription} text={description}/>},
@@ -71,9 +74,14 @@ const Upload:React.FC = (props) => {
     const isLastStep = ( i, arr ) => i === arr.length -1;
 
     const handleUpload = async () => {
+        setLoader(true);
         await UploadCtrl( props.contract, props.account, getVideoDatas() );
-        navigate('/');
+        setLoader(false);
+        setUploaded(true);
+        await toHomepage();
     }
+
+    const toHomepage = async () => setTimeout( () => navigate('/'), 5000 );
 
     const setErrorAlert = (type, label) => {
         if (type === 'text') return <InvalidString step={label} />;
@@ -108,7 +116,8 @@ const Upload:React.FC = (props) => {
     return (
         <PageContainer>
             <Stack direction='row' justifyContent="center">
-                <Card sx={{maxWidth: '360px;'}}>
+
+                <Card sx={{minWidth: {sm: '600px', xs: '300px'}}}>
                     <CardHeader title="My brand new video" />
                     <CardContent>
                         <Stepper activeStep={activeStep} orientation="vertical">
@@ -117,6 +126,18 @@ const Upload:React.FC = (props) => {
                     </CardContent>
                 </Card>
             </Stack>
+            <Loading open={loader} />
+            <Snack 
+            options={
+                {
+                    open: uploaded,
+                    close: closeSnackbar,
+                    duration: 4000,
+                    message: 'Was successfully uploaded to the Matrix',
+                    severity: 'success',
+                    position: {vertical: 'top', horizontal: 'center'}
+                }
+            } />
         </PageContainer>
     );
 };
