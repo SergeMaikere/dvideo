@@ -15,4 +15,6 @@ export const getAllVideos = async (videoCount, contract) => {
     return Promise.all( arr.map(async count => await contract.methods.videos(count).call()) );
 }
 
+export const prettiffyAllAcceptedExtensions = reg => reg.replace(/\(\\|\)/g, '').replace(/\|\\/g, ' ');
+
 export const isObjectEmpty = obj => Object.keys(obj).length === 0;

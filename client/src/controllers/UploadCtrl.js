@@ -2,7 +2,7 @@ import { create } from 'ipfs-http-client';
 
 const UploadCtrl = async ( contract, account, videoObj ) => {
 
-    const ipfs = create('/ip4/127.0.0.1/tcp/5001');
+    const ipfs = create(process.env.REACT_APP_IPFS_ADDRESS);
 
     const sendFileToIpfs = async file => {
         const result = await ipfs.add(file);
