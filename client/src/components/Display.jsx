@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import VideoCard from './VideoCard';
 import Box from '@mui/material/Box';
+import Masonry from '@mui/lab/Masonry';
 
 const Display = props => {
-    
-    const displayAllVideos = videos => videos.map( video =>  <VideoCard key={video.id} video ={video} /> );
  
-    return <Box sx= {{display: 'flex', flexWrap: 'wrap'}}> { displayAllVideos(props.videos) } </Box>
+    return (
+        <Masonry columns={4} spacing={2}> 
+            {props.videos.map(video =>  <VideoCard key={video.id} video ={video} />)} 
+        </Masonry>
+    )
 }
-
 
 export default Display;
 

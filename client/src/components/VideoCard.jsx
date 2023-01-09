@@ -12,7 +12,7 @@ import useSince from '../hooks/useSince';
 
 const VideoCard = props => {
     return (
-        <Card elevation={0} sx={{maxWidth:"300px", mr: "6px"}}>
+        <Card>
             <CardActionArea>
                 <Link to={`/video/${props.video.id}`}>
                     <CardMedia

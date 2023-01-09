@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Title, Description, SelectVideo, SelectPoster, UploadVideo, SubmitNewVideo } from '../components/UploadComponents';
+import { Title, Description, SelectVideo, SelectPoster, SubmitNewVideo } from '../components/UploadComponents';
 import { InvalidImageFile, InvalidString, InvalidVideoFile } from '../components/Errors';
 import StepperButtons from '../components/StepperButtons';
 import { PageContainer } from '../style/style';
