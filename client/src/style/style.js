@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import Paper from '@mui/material/Paper';
 import Container from '@mui/material/Container';
+import { Link } from 'react-router-dom';
 
 export const Item = styled(Paper)`
     margin-top: 12px; 
@@ -18,8 +19,13 @@ export const InputNinja = styled.input`
 export const PageContainer = styled(Container)`
     margin: 60px 0;
     height: 100vh;
-`
+`;
 
 export const StyledVideo = styled.video`
     width: 100%;
+`;
+
+export const StyledLink = styled(Link)`
+    text-decoration: none;
+    color: inherit;
 `

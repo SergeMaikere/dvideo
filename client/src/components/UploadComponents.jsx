@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
-import FormControl from '@mui/material/FormControl';
 import VideoCameraFrontIcon from '@mui/icons-material/VideoCameraFront';
-import { Item, InputNinja, PageContainer } from '../style/style';
+import { InputNinja } from '../style/style';
 import { Box, CardContent, CardHeader, Typography } from '@mui/material';
 import PhotoIcon from '@mui/icons-material/Photo';
 

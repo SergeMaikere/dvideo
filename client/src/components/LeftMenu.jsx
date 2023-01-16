@@ -1,22 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { AutoAwesomeMotion, ChevronLeft, History, Home, LocalFireDepartment, ThumbUpOffAltOutlined, VideoLibrary } from '@mui/icons-material';
 import { Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, styled } from '@mui/material';
-import { Link } from 'react-router-dom';
-
-const drawerWidth = 240;
+import { StyledLink } from '../style/style';
 
 const LeftMenu = props => {
     
     const items = [
 
-        { divider: true },
         { to: '/', text: 'Home', icon: <Home/> },
         { to: '/', text: 'Subscription', icon: <AutoAwesomeMotion/> },
         { to: '/', text: 'Trending', icon: <LocalFireDepartment/> },
-        { divider: true },
         { to: '/', text: 'History', icon: <History/> },
         { to: '/', text: 'Liked Videos', icon: <ThumbUpOffAltOutlined/> },
-        { divider: true },
         { to: '/upload', text: 'Your Studio', icon: <VideoLibrary/> },
 
     ]
@@ -28,7 +23,7 @@ const LeftMenu = props => {
             {
                 display: 'flex',
                 alignItems: 'center',
-                padding: theme.spacing(0, 1),
+                //padding: theme.spacing(0, 1),
                 // necessary for content to be below app bar
                 ...theme.mixins.toolbar,
                 justifyContent: 'flex-end',
@@ -37,19 +32,16 @@ const LeftMenu = props => {
     );
 
     const displayMenu = arrObj => arrObj.map(
-        (obj, i) => {
-            if ( obj.hasOwnProperty('divider') ) return <Divider key={i} />;
-            
+        (obj, i) => {            
             return (
-                
-                <ListItem key={i} disablePadding>
-                    <Paper sx={{width: '100%'}}>
-                        <Link to={obj.to}>
+                <ListItem key={i}>
+                    <Paper elevation={3} sx={{width: '100%'}}>
+                        <StyledLink to={obj.to}>
                             <ListItemButton onClick={handleDrawerClose}>
                                 <ListItemIcon> {obj.icon} </ListItemIcon>
                                 <ListItemText> {obj.text} </ListItemText>
                             </ListItemButton>
-                        </Link>
+                        </StyledLink>
                     </Paper>
                 </ListItem> 
             

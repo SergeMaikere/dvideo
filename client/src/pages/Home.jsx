@@ -1,5 +1,4 @@
 import React from 'react';
-import { PageContainer } from '../style/style';
 import Display from '../components/Display';
 import useAllVideos from '../hooks/useAllVideos';
 import { Container } from '@mui/material';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Alert, AlertTitle } from '@mui/material';
 import { prettiffyAllAcceptedExtensions } from '../utils/Helper';
 

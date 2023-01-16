@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getVideo } from '../utils/Helper';
-import { Box, Card, CardContent, CardHeader, Paper, Stack } from '@mui/material';
+import { Card, CardContent, CardHeader, Stack } from '@mui/material';
 import { PageContainer, StyledVideo } from '../style/style';
 import VideoSideBar from '../components/VideoSideBar';
 

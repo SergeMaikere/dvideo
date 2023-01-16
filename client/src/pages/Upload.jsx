@@ -6,11 +6,9 @@ import { PageContainer } from '../style/style';
 import UploadCtrl from '../controllers/UploadCtrl.js';
 import { useNavigate } from 'react-router-dom';
 import { validateUpload } from '../controllers/validateForm';
-import Loading from '../Loading';
 import Snack from '../components/Snack';
+import Loading from '../components/Loading';
 import { 
-    Box, 
-    Button, 
     Card, 
     CardContent, 
     CardHeader, Stack, Step, 
@@ -29,7 +27,6 @@ const Upload:React.FC = (props) => {
     const [ file, setFile] = useState({});
     const [ posterName, setPosterName ] = useState('');
     const [ posterFile, setPosterFile] = useState({});
-    const [ videoDatas, setVideoDatas ] = useState( {} );
     const [ activeStep, setActiveStep ] = useState( 0 );
     const [ isActiveStepValid, setISActiveStepValid ] = useState( true );
 
